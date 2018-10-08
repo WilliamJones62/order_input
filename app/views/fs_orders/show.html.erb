@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Partcode:</strong>
+  <%= @fs_order.partcode %>
+</p>
+
+<p>
+  <strong>Qty:</strong>
+  <%= @fs_order.qty %>
+</p>
+
+<p>
+  <strong>Customer:</strong>
+  <%= @fs_order.customer %>
+</p>
+
+<p>
+  <strong>Shipto:</strong>
+  <%= @fs_order.shipto %>
+</p>
+
+<p>
+  <strong>Date required:</strong>
+  <%= @fs_order.date_required %>
+</p>
+
+<%= link_to 'Edit', edit_fs_order_path(@fs_order) %> |
+<%= link_to 'Back', fs_orders_path %>

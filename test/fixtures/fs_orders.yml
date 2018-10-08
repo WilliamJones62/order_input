@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  partcode: MyString
+  qty: 1
+  customer: MyString
+  shipto: MyString
+  date_required: 2018-10-08
+
+two:
+  partcode: MyString
+  qty: 1
+  customer: MyString
+  shipto: MyString
+  date_required: 2018-10-08

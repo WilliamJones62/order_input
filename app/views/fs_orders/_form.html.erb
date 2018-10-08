@@ -1,0 +1,42 @@
+<%= form_with(model: fs_order, local: true) do |form| %>
+  <% if fs_order.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(fs_order.errors.count, "error") %> prohibited this fs_order from being saved:</h2>
+
+      <ul>
+      <% fs_order.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :partcode %>
+    <%= form.text_field :partcode, id: :fs_order_partcode %>
+  </div>
+
+  <div class="field">
+    <%= form.label :qty %>
+    <%= form.number_field :qty, id: :fs_order_qty %>
+  </div>
+
+  <div class="field">
+    <%= form.label :customer %>
+    <%= form.text_field :customer, id: :fs_order_customer %>
+  </div>
+
+  <div class="field">
+    <%= form.label :shipto %>
+    <%= form.text_field :shipto, id: :fs_order_shipto %>
+  </div>
+
+  <div class="field">
+    <%= form.label :date_required %>
+    <%= form.date_select :date_required, id: :fs_order_date_required %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

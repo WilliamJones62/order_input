@@ -1,0 +1,2 @@
+class FsOrder < ApplicationRecord
+end

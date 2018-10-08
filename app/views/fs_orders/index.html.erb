@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Fs Orders</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Partcode</th>
+      <th>Qty</th>
+      <th>Customer</th>
+      <th>Shipto</th>
+      <th>Date required</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @fs_orders.each do |fs_order| %>
+      <tr>
+        <td><%= fs_order.partcode %></td>
+        <td><%= fs_order.qty %></td>
+        <td><%= fs_order.customer %></td>
+        <td><%= fs_order.shipto %></td>
+        <td><%= fs_order.date_required %></td>
+        <td><%= link_to 'Show', fs_order %></td>
+        <td><%= link_to 'Edit', edit_fs_order_path(fs_order) %></td>
+        <td><%= link_to 'Destroy', fs_order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Fs Order', new_fs_order_path %>
