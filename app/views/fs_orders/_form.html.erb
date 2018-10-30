@@ -11,30 +11,38 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= form.label :partcode %>
-    <%= form.text_field :partcode, id: :fs_order_partcode %>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th><%= form.label :customer %></th>
+        <th><%= form.label :date_required %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= form.text_field :customer, size: 10, id: :fs_order_customer %></td>
+        <td><%= form.date_field :date_required, id: :fs_order_date_required %></td>
+      </tr>
+    </tbody>
+  </table>
 
-  <div class="field">
-    <%= form.label :qty %>
-    <%= form.number_field :qty, id: :fs_order_qty %>
-  </div>
-
-  <div class="field">
-    <%= form.label :customer %>
-    <%= form.text_field :customer, id: :fs_order_customer %>
-  </div>
-
-  <div class="field">
-    <%= form.label :shipto %>
-    <%= form.text_field :shipto, id: :fs_order_shipto %>
-  </div>
-
-  <div class="field">
-    <%= form.label :date_required %>
-    <%= form.date_select :date_required, id: :fs_order_date_required %>
-  </div>
+  <h3>Parts</h3>
+  <%= form.fields_for :fs_order_parts do |p| %>
+  <table>
+    <thead>
+      <tr>
+        <th><%= p.label :partcode, "Description" %></th>
+        <th><%= p.label :qty %></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><%= p.select :partcode, $descs, {include_blank: true}, :style => "width:24em" %></td>
+          <td><%= p.number_field :qty, :style => "width:2.5em" %></td>
+        </tr>
+    </tbody>
+  </table>
+  <% end %>
 
   <div class="actions">
     <%= form.submit %>

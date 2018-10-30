@@ -1,6 +1,6 @@
 class User < ApplicationRecord
+  self.table_name = "fs_order_input_users"
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  devise :database_authenticatable, :registerable, :trackable
 end
