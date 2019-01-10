@@ -1,7 +1,3 @@
-<h3>Showing FS Order</h3>
-
-<p id="notice"><%= notice %></p>
-
 <table>
   <thead>
     <tr>
@@ -20,6 +16,7 @@
 <table id="listtab"  class="stripe" class="mytable" class="display" cellspacing="0" >
   <thead>
     <tr>
+      <th> UOM </th>
       <th> Part </th>
       <th> Quantity </th>
       <th> Delete </th>
@@ -28,15 +25,11 @@
   <tbody>
     <% @fs_order.fs_order_parts.each do |c| %>
     <tr>
-      <td> <%= c.partcode %> </td>
+      <td> <%= c.uom %> </td>
+      <td> <%= c.partdesc %> </td>
       <td> <%= c.qty %> </td>
       <td><%= link_to 'Delete', fs_order_fs_order_part_path(@fs_order.id, c.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
     </tr>
     <% end %>
   </tbody>
 </table>
-
-<% if @user != 'ADMIN' %>
-  <%= link_to 'Edit', edit_fs_order_path(@fs_order) %>
-<% end %>
-<%= link_to 'List', fs_orders_path %>

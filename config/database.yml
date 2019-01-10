@@ -27,3 +27,11 @@ production:
   dataserver: sqlserver01\reporting
   username: intranet
   password: Duck600it
+
+e21prod:
+  <<: *default
+  adapter: sqlserver
+  database: e21prod
+  dataserver: sqlserver01\reporting
+  username: intranet
+  password: Duck600it

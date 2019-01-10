@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181025133128) do
+ActiveRecord::Schema.define(version: 20181205174712) do
+
+  create_table "current_prices", force: :cascade do |t|
+    t.string "part_code"
+    t.float "part_wt"
+    t.string "part_uom"
+    t.float "part_price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "fs_order_parts", force: :cascade do |t|
     t.integer "fs_order_id"
@@ -18,6 +27,8 @@ ActiveRecord::Schema.define(version: 20181025133128) do
     t.integer "qty"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "partdesc"
+    t.string "uom"
   end
 
   create_table "fs_orders", force: :cascade do |t|
@@ -29,12 +40,31 @@ ActiveRecord::Schema.define(version: 20181025133128) do
     t.string "rep"
   end
 
+  create_table "oecusbuys", force: :cascade do |t|
+    t.string "cust_code"
+    t.string "part_code"
+    t.integer "item_no"
+    t.integer "hist_qty"
+    t.integer "ord_qty"
+    t.string "uom"
+    t.date "last_ord_date"
+    t.date "last_ship_date"
+    t.string "po_vend_code"
+    t.date "item_outdate"
+    t.date "duedate"
+    t.string "up_all_dates"
+    t.string "uom_conv"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "partmstrs", force: :cascade do |t|
     t.string "part_code"
     t.string "part_desc"
     t.string "part_grp"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "uom"
   end
 
   create_table "users", force: :cascade do |t|

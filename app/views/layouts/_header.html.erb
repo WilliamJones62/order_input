@@ -3,6 +3,7 @@
 
 <% if current_user %>
   <div id="navbar">
+    <span><%= link_to 'List', fs_orders_path %></span>
     <% if current_user.email == "admin" %>
       <span><%= link_to 'Sign up', new_user_registration_path %></span>
     <% end %>

@@ -20,8 +20,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><%= form.text_field :customer, size: 10, id: :fs_order_customer %></td>
-        <td><%= form.date_field :date_required, id: :fs_order_date_required %></td>
+        <td><%= form.text_field :customer, size: 10, readonly: true, id: :fs_order_customer %></td>
+        <td><%= form.date_field :date_required, id: :fs_order_date_required, :value => Time.current.tomorrow.strftime('%Y-%m-%d') %></td>
       </tr>
     </tbody>
   </table>
@@ -31,20 +31,29 @@
   <table>
     <thead>
       <tr>
-        <th><%= p.label :partcode, "Description" %></th>
+        <th><%= p.label :uom, "UOM" %></th>
+        <th><%= p.label :partdesc, "Description" %></th>
         <th><%= p.label :qty %></th>
+        <th><%= p.label :partcode, "New part" %></th>
       </tr>
     </thead>
     <tbody>
         <tr>
-          <td><%= p.select :partcode, $descs, {include_blank: true}, :style => "width:24em" %></td>
+          <td><%= p.text_field :uom, readonly: true, :style => "width:2.5em" %></td>
+          <td><%= p.select :partdesc, $descs, {:style => "width:20em"}, {:onchange=> ("partUoms(id)")} %></td>
           <td><%= p.number_field :qty, :style => "width:2.5em" %></td>
+          <td><%= p.text_field :partcode, {:oninput=> ("partDescriptions(id)")} %></td>
         </tr>
     </tbody>
   </table>
   <% end %>
 
   <div class="actions">
-    <%= form.submit %>
+    <%= form.submit "Input order" %>
   </div>
 <% end %>
+<p id= "uoms" hidden> <%= $jsuoms %> </p>
+<p id= "descs" hidden> <%= $jsdescs %> </p>
+<p id= "alldescs" hidden> <%= $alldescs %> </p>
+<p id= "allcodes" hidden> <%= $allcodes %> </p>
+<p id= "alluoms" hidden> <%= $alluoms %> </p>

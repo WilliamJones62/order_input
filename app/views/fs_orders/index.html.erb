@@ -9,7 +9,6 @@
       <th>Cust</th>
       <th>Date</th>
       <th>Edit</th>
-      <th>Delete</th>
     </tr>
   </thead>
 
@@ -26,7 +25,6 @@
         <% else %>
           <td><%= link_to 'Show', fs_order %></td>
         <% end %>
-        <td><%= link_to 'Delete', fs_order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -34,5 +32,5 @@
 
 <% if @user != 'ADMIN' %>
   <br>
-  <%= link_to 'New FS Order', new_fs_order_path %>
+  <%= link_to 'New Order', fs_orders_customer_path %>
 <% end %>

@@ -1,6 +1,6 @@
 class FsOrdersController < ApplicationController
   before_action :set_fs_order, only: [:show, :edit, :update, :destroy]
-  before_action :set_descriptions, only: [:new, :edit]
+  before_action :set_descriptions, only: [:new, :edit, :customer]
 
   # GET /fs_orders
   def index
@@ -20,11 +20,22 @@ class FsOrdersController < ApplicationController
   # GET /fs_orders/new
   def new
     @fs_order = FsOrder.new
+    @fs_order.customer = $customer
     6.times { @fs_order.fs_order_parts.build }
   end
 
   # GET /fs_orders/1/edit
   def edit
+    # need to include any parts that have been added to this order that were not previously sold
+    parts = @fs_order.fs_order_parts.all
+    parts.each do |p|
+      if p.partdesc && !$descs.include?(p.partdesc)
+        # include any new parts in description list
+        jsdesc = p.partdesc.gsub(' ', '~')
+        $descs.push(p.partdesc)
+        $jsdescs.push(jsdesc)
+      end
+    end
     @fs_order.fs_order_parts.build
   end
 
@@ -38,8 +49,17 @@ class FsOrdersController < ApplicationController
 
     respond_to do |format|
       if @fs_order.save
-        format.html { redirect_to @fs_order, notice: 'Fs order was successfully created.' }
+        format.html { redirect_to fs_orders_url, notice: 'FS order was successfully created.' }
       else
+        @fs_order.fs_order_parts.build
+        @fs_order.fs_order_parts.each do |p|
+          if p.partdesc && !$descs.include?(p.partdesc)
+            # include any new parts in description list
+            jsdesc = p.partdesc.gsub(' ', '~')
+            $descs.push(p.partdesc)
+            $jsdescs.push(jsdesc)
+          end
+        end
         format.html { render :new }
       end
     end
@@ -49,8 +69,17 @@ class FsOrdersController < ApplicationController
   def update
     respond_to do |format|
       if @fs_order.update(fs_order_params)
-        format.html { redirect_to @fs_order, notice: 'Fs order was successfully updated.' }
+        format.html { redirect_to fs_orders_url, notice: 'FS order was successfully updated.' }
       else
+        @fs_order.fs_order_parts.build
+        @fs_order.fs_order_parts.each do |p|
+          if p.partdesc && !$descs.include?(p.partdesc)
+            # include any new parts in description list
+            jsdesc = p.partdesc.gsub(' ', '~')
+            $descs.push(p.partdesc)
+            $jsdescs.push(jsdesc)
+          end
+        end
         format.html { render :edit }
       end
     end
@@ -60,38 +89,100 @@ class FsOrdersController < ApplicationController
   def destroy
     @fs_order.destroy
     respond_to do |format|
-      format.html { redirect_to fs_orders_url, notice: 'Fs order was successfully destroyed.' }
+      format.html { redirect_to fs_orders_url, notice: 'FS order was successfully destroyed.' }
     end
+  end
+
+  def customer
+    cust = Orderfrom.where(cust_group: 'FS').where(cust_status: 'A')
+    $names = []
+    cust.each do |c|
+      $names.push(c.bus_name)
+    end
+  end
+
+  def selected
+    bus_name = params[:custname].gsub(' ', '~')
+    i = $allnames.index(bus_name)
+    $customer = $allcusts[i]
+    redirect_to action: "new"
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_fs_order
       @fs_order = FsOrder.find(params[:id])
+      $customer = @fs_order.customer
     end
 
     def set_descriptions
-      if !$descs
-        descs = Partmstr.all
-        temp_descs = []
-        descs.each do |d|
-          if d.part_desc && !temp_descs.include?(d.part_desc)
-            temp_descs.push(d.part_desc)
+      if !$alldescs
+        # need to set up global list of part descriptions
+        parts = Partmstr.all
+        $alldescs = []
+        $allcodes = []
+        $alluoms = []
+        $allcodes.push(' ')
+        $alluoms.push(' ')
+        $alldescs.push(' ')
+        parts.each do |p|
+          if p.part_code
+            $allcodes.push(p.part_code)
+            $alluoms.push(p.uom)
+            desc = p.part_desc.gsub(' ', '~')
+            $alldescs.push(desc)
           end
         end
-        $descs = temp_descs.sort
+      end
+      if !$allcusts
+        # need to set up global list of customers
+        customers = Orderfrom.where(cust_group: 'FS').where(cust_status: 'A')
+        $allcusts = []
+        $allnames = []
+        $allcusts.push(' ')
+        $allnames.push(' ')
+        customers.each do |c|
+          if !c.cust_code.blank? && !c.bus_name.blank?
+            cust = c.cust_code.gsub(' ', '~')
+            $allcusts.push(cust)
+            name = c.bus_name.gsub(' ', '~')
+            $allnames.push(name)
+          end
+        end
+      end
+      if !$old_customer || $old_customer != $customer
+        parts = Oecusbuy.where(cust_code: $customer)
+        $old_customer = $customer
+        $descs = []
+        $jsdescs = []
+        $jsuoms = []
+        $jsdescs.push('~')
+        $descs.push(' ')
+        $jsuoms.push('~')
+        parts.each do |p|
+          if p.part_code
+            part = Partmstr.find_by(part_code: p.part_code)
+            if part
+              jsdesc = part.part_desc.gsub(' ', '~')
+              $jsdescs.push(jsdesc)
+              $descs.push(part.part_desc)
+              $jsuoms.push(part.uom)
+            end
+          end
+        end
       end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def fs_order_params
-      params.require(:fs_order).permit(:partcode, :qty, :customer, :shipto, :date_required, :rep)
       params.require(:fs_order).permit(
-        :customer, :shipto, :date_required,
+        :customer, :shipto, :date_required, :rep,
         fs_order_parts_attributes: [
           :id,
           :partcode,
-          :qty
+          :qty,
+          :partdesc,
+          :uom
         ]
       )
     end

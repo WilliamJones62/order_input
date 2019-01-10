@@ -1,0 +1,31 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cust_code: MyString
+  part_code: MyString
+  item_no: 1
+  hist_qty: 1
+  ord_qty: 1
+  uom: MyString
+  last_ord_date: 2018-11-05
+  last_ship_date: 2018-11-05
+  po_vend_code: MyString
+  item_outdate: 2018-11-05
+  duedate: 2018-11-05
+  up_all_dates: MyString
+  uom_conv: MyString
+
+two:
+  cust_code: MyString
+  part_code: MyString
+  item_no: 1
+  hist_qty: 1
+  ord_qty: 1
+  uom: MyString
+  last_ord_date: 2018-11-05
+  last_ship_date: 2018-11-05
+  po_vend_code: MyString
+  item_outdate: 2018-11-05
+  duedate: 2018-11-05
+  up_all_dates: MyString
+  uom_conv: MyString
