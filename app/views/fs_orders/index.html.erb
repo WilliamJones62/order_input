@@ -9,6 +9,7 @@
       <th>Cust</th>
       <th>Date</th>
       <th>Edit</th>
+      <th>Cancel</th>
     </tr>
   </thead>
 
@@ -22,8 +23,10 @@
         <td><%= display_date(fs_order.date_required) %></td>
         <% if @user != 'ADMIN' %>
           <td><%= link_to 'Edit', edit_fs_order_path(fs_order) %></td>
+          <td><%= link_to 'Cancel', fs_order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
         <% else %>
           <td><%= link_to 'Show', fs_order %></td>
+          <td></td>
         <% end %>
       </tr>
     <% end %>
@@ -33,4 +36,5 @@
 <% if @user != 'ADMIN' %>
   <br>
   <%= link_to 'New Order', fs_orders_customer_path %>
+  <%= link_to 'TXT Download', fs_orders_path(format: "csv") %>
 <% end %>

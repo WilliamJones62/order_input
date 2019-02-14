@@ -58,3 +58,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'bcrypt', git: 'https://github.com/codahale/bcrypt-ruby.git', :require => 'bcrypt'
 gem 'devise'
 gem 'dotenv'
+gem 'whenever', require: false
+gem 'rake', '12.3.2'
+gem 'concurrent-ruby', '~> 1.1', '>= 1.1.4'

@@ -1,14 +1,19 @@
 class FsOrdersController < ApplicationController
   before_action :set_fs_order, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:create, :index, :show, :edit, :update, :destroy]
   before_action :set_descriptions, only: [:new, :edit, :customer]
 
   # GET /fs_orders
   def index
-    @user = current_user.email.upcase
     if @user == 'ADMIN'
       @fs_orders = FsOrder.all
     else
-      @fs_orders = FsOrder.where(rep: @user)
+      @fs_orders = FsOrder.where(rep: @user).where(status: 'ACTIVE')
+    end
+    respond_to do |format|
+      format.html
+      format.csv { send_data @fs_orders.to_txt, :filename => 'orders.txt' }
+
     end
   end
 
@@ -41,14 +46,24 @@ class FsOrdersController < ApplicationController
 
   # POST /fs_orders
   def create
-    @user = current_user.email.upcase
     fp = fs_order_params
     fp[:rep] = @user
+    fp[:status] = 'ACTIVE'
 
     @fs_order = FsOrder.new(fp)
 
     respond_to do |format|
       if @fs_order.save
+        @fs_order.fs_order_parts.each do |p|
+          if p.partdesc
+          # need to store the part code for each descriptions
+            part = Partmstr.find_by(part_desc: p.partdesc)
+            if part
+              p.partcode = part.part_code
+              p.save
+            end
+          end
+        end
         format.html { redirect_to fs_orders_url, notice: 'FS order was successfully created.' }
       else
         @fs_order.fs_order_parts.build
@@ -67,8 +82,19 @@ class FsOrdersController < ApplicationController
 
   # PATCH/PUT /fs_orders/1
   def update
+    fp = fs_order_params
     respond_to do |format|
-      if @fs_order.update(fs_order_params)
+      if @fs_order.update(fp)
+        @fs_order.fs_order_parts.each do |p|
+          if p.partdesc
+          # need to store the part code for each descriptions
+            part = Partmstr.find_by(part_desc: p.partdesc)
+            if part
+              p.partcode = part.part_code
+              p.save
+            end
+          end
+        end
         format.html { redirect_to fs_orders_url, notice: 'FS order was successfully updated.' }
       else
         @fs_order.fs_order_parts.build
@@ -87,9 +113,12 @@ class FsOrdersController < ApplicationController
 
   # DELETE /fs_orders/1
   def destroy
-    @fs_order.destroy
+    @fs_order.status = 'CANCELLED'
+    @fs_order.cancel_rep = @user
+    @fs_order.cancel_date = Date.today
+    @fs_order.save
     respond_to do |format|
-      format.html { redirect_to fs_orders_url, notice: 'FS order was successfully destroyed.' }
+      format.html { redirect_to fs_orders_url, notice: 'FS order was successfully cancelled.' }
     end
   end
 
@@ -113,6 +142,10 @@ class FsOrdersController < ApplicationController
     def set_fs_order
       @fs_order = FsOrder.find(params[:id])
       $customer = @fs_order.customer
+    end
+
+    def set_user
+      @user = current_user.email.upcase
     end
 
     def set_descriptions
@@ -176,7 +209,7 @@ class FsOrdersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def fs_order_params
       params.require(:fs_order).permit(
-        :customer, :shipto, :date_required, :rep,
+        :customer, :shipto, :date_required, :rep, :status, :cancel_rep, :cancel_date,
         fs_order_parts_attributes: [
           :id,
           :partcode,
