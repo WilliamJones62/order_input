@@ -19,7 +19,6 @@ class FsOrdersController < ApplicationController
 
   # GET /fs_orders/1
   def show
-    @user = current_user.email.upcase
   end
 
   # GET /fs_orders/new
@@ -56,6 +55,7 @@ class FsOrdersController < ApplicationController
       if @fs_order.save
         @fs_order.fs_order_parts.each do |p|
           if p.partdesc
+            p.partdesc.gsub!('~', ' ')
           # need to store the part code for each descriptions
             part = Partmstr.find_by(part_desc: p.partdesc)
             if part
@@ -152,6 +152,7 @@ class FsOrdersController < ApplicationController
       if !$alldescs
         # need to set up global list of part descriptions
         parts = Partmstr.all
+        sort_array = []
         $alldescs = []
         $allcodes = []
         $alluoms = []
@@ -160,11 +161,32 @@ class FsOrdersController < ApplicationController
         $alldescs.push(' ')
         parts.each do |p|
           if p.part_code
-            $allcodes.push(p.part_code)
-            $alluoms.push(p.uom)
             desc = p.part_desc.gsub(' ', '~')
-            $alldescs.push(desc)
+            if p.part_code[0,1] == 'Z'
+              # frozen codes should sort to the bottom of the list
+              desc.insert(0,'Z')
+            end
+            combined = desc + p.part_code + desc.length.to_s + p.uom
+            sort_array.push(combined)
           end
+        end
+        sorted_array = sort_array.sort
+        sorted_array.each do |p|
+          uom = p[p.length-2,2]
+          desc_len = p[p.length-4,2]
+          desc_length = desc_len.to_i
+          des = p[0,desc_length]
+          offset = desc_length
+          code_length = p.length - (desc_length + 4)
+          code = p[offset,code_length]
+          if des[0,1] == 'Z'
+            desc = des[1..-1]
+          else
+            desc = des
+          end
+          $allcodes.push(code)
+          $alluoms.push(uom)
+          $alldescs.push(desc)
         end
       end
       if !$allcusts
@@ -184,7 +206,8 @@ class FsOrdersController < ApplicationController
         end
       end
       if !$old_customer || $old_customer != $customer
-        parts = Oecusbuy.where(cust_code: $customer)
+        sort_array = []
+        parts = Oecusbuy.where(cust_code: $customer).where(last_ord_date: 18.months.ago..Date.today)
         $old_customer = $customer
         $descs = []
         $jsdescs = []
@@ -196,12 +219,34 @@ class FsOrdersController < ApplicationController
           if p.part_code
             part = Partmstr.find_by(part_code: p.part_code)
             if part
-              jsdesc = part.part_desc.gsub(' ', '~')
-              $jsdescs.push(jsdesc)
-              $descs.push(part.part_desc)
-              $jsuoms.push(part.uom)
+              desc = part.part_desc.gsub(' ', '~')
+              if part.part_code[0,1] == 'Z'
+                # frozen codes should sort to the bottom of the list
+                desc.insert(0,'Z')
+              end
+              combined = desc + p.part_code + desc.length.to_s + p.uom
+              sort_array.push(combined)
             end
           end
+        end
+        sorted_array = sort_array.sort
+        sorted_array.each do |p|
+          uom = p[p.length-2,2]
+          desc_len = p[p.length-4,2]
+          desc_length = desc_len.to_i
+          des = p[0,desc_length]
+          offset = desc_length
+          code_length = p.length - (desc_length + 4)
+          code = p[offset,code_length]
+          if des[0,1] == 'Z'
+            desc = des[1..-1]
+          else
+            desc = des
+          end
+          $jsdescs.push(desc)
+          desc.gsub!('~', ' ')
+          $descs.push(desc)
+          $jsuoms.push(uom)
         end
       end
     end
