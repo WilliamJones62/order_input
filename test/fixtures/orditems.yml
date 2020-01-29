@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  order_numb: MyString
+  rel_numb: MyString
+  part_code: MyString
+  part_desc: MyString
+  uom: MyString
+  qty: 1
+
+two:
+  order_numb: MyString
+  rel_numb: MyString
+  part_code: MyString
+  part_desc: MyString
+  uom: MyString
+  qty: 1

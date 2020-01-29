@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cust_code: MyString
+  shipto_code: MyString
+  default_flag: false
+  acct_manager: MyString
+
+two:
+  cust_code: MyString
+  shipto_code: MyString
+  default_flag: false
+  acct_manager: MyString

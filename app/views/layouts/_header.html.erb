@@ -1,11 +1,13 @@
-<h2 class="primary-logo"></h2>
 <h1 class="title">FS</h1>
 
-<% if current_user %>
+<% if current_user5 %>
   <div id="navbar">
     <span><%= link_to 'List', fs_orders_path %></span>
-    <% if current_user.email == "admin" %>
-      <span><%= link_to 'Sign up', new_user_registration_path %></span>
+    <span><%= link_to 'New Order', fs_orders_customer_path %></span>
+    <span><%= link_to 'Errors', fs_orders_error_path %></span>
+    <span><%= link_to 'Sign out', destroy_user5_session_path, method: :delete %></span>
+    <% if current_user5.email == "admin" %>
+      <span><%= link_to 'Sign up', new_user5_registration_path %></span>
     <% end %>
   </div>
 <% end %>

@@ -16,7 +16,10 @@
 # every 4.days do
 #   runner "AnotherModel.prune_old_records"
 # end
-  every 3.hours do
-    rake "orders"
-  end
+
+  # set :output, {:error => '/home/billj/Desktop/z.error.log', :standard => '/home/billj/Desktop/z.standard.log'}
+  #
+  # every 30.minutes do
+  #   rake "orders"
+  # end
 # Learn more: http://github.com/javan/whenever

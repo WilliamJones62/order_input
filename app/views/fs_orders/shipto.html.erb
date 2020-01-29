@@ -1,0 +1,10 @@
+<p id="notice"><%= notice %></p>
+
+<h2>Customer Code: <%= $customer %></h2>
+<h2>Enter Ship To</h2>
+
+<%= form_with url: fs_orders_chosen_path, local: true, method: 'get' do |f| %>
+  <%= f.label(:fs_orders_shipto, 'Ship To:') %>
+  <%= f.select :shipto, @shiptos, {}, id: "shipto"  %>
+  <%= f.submit "Enter" %>
+<% end %>

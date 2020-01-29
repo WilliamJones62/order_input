@@ -6,6 +6,8 @@
       paging: false,
       autoWidth: true,
       responsive: true,
+      info: false,
+      searching: false,
       retrieve: true
     });
 

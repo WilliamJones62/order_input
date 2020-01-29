@@ -9,7 +9,7 @@ end
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.6'
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+gem 'sqlite3', '~> 1.3.13'
 # Use sqlserver as the database for Active Record in production
 gem "tiny_tds", '<=1.3.0'
 gem 'activerecord-sqlserver-adapter'
@@ -58,6 +58,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'bcrypt', git: 'https://github.com/codahale/bcrypt-ruby.git', :require => 'bcrypt'
 gem 'devise'
 gem 'dotenv'
-gem 'whenever', require: false
 gem 'rake', '12.3.2'
-gem 'concurrent-ruby', '~> 1.1', '>= 1.1.4'

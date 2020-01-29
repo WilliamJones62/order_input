@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190114204810) do
+ActiveRecord::Schema.define(version: 20200128181734) do
 
   create_table "current_prices", force: :cascade do |t|
     t.string "part_code"
@@ -21,6 +21,16 @@ ActiveRecord::Schema.define(version: 20190114204810) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "customer_shiptos", force: :cascade do |t|
+    t.string "cust_code"
+    t.string "shipto_code"
+    t.boolean "default_flag"
+    t.string "acct_manager"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "bus_name"
+  end
+
   create_table "fs_order_parts", force: :cascade do |t|
     t.integer "fs_order_id"
     t.string "partcode"
@@ -29,6 +39,7 @@ ActiveRecord::Schema.define(version: 20190114204810) do
     t.datetime "updated_at", null: false
     t.string "partdesc"
     t.string "uom"
+    t.boolean "new_part"
   end
 
   create_table "fs_orders", force: :cascade do |t|
@@ -41,6 +52,12 @@ ActiveRecord::Schema.define(version: 20190114204810) do
     t.string "status"
     t.string "cancel_rep"
     t.date "cancel_date"
+    t.string "po_number"
+    t.text "notes"
+    t.boolean "order_entered"
+    t.boolean "second_run"
+    t.string "dp"
+    t.string "order_num"
   end
 
   create_table "oecusbuys", force: :cascade do |t|
@@ -67,6 +84,30 @@ ActiveRecord::Schema.define(version: 20190114204810) do
     t.string "cust_group"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "sales_type"
+  end
+
+  create_table "ordheads", force: :cascade do |t|
+    t.string "order_numb"
+    t.string "rel_numb"
+    t.date "order_date"
+    t.string "cust_code"
+    t.string "cust_name"
+    t.string "cust_po"
+    t.string "shipto_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "orditems", force: :cascade do |t|
+    t.string "order_numb"
+    t.string "rel_numb"
+    t.string "part_code"
+    t.string "part_desc"
+    t.string "uom"
+    t.integer "qty"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "partmstrs", force: :cascade do |t|
@@ -86,6 +127,9 @@ ActiveRecord::Schema.define(version: 20190114204810) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "rep1"
+    t.string "rep2"
+    t.string "rep3"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

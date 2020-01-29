@@ -26,7 +26,6 @@ function custName() {
     var arraylength = names_array.length;
     for (i = 0; i < arraylength; i++) {
       text = names_array[i].replace(/~/g, ' ');
-      text = text.replace(/`/g, ',');
       o.text = text.replace(/&amp;/g, '&');
       name.options.add(o, name.options.length);
       o.selected = false;
@@ -34,22 +33,22 @@ function custName() {
     }
   } else {
     //* Use custcode prefix to get list of names
-    // var custs = document.getElementById("allcusts").innerHTML;
-    // var custs_array = getData(custs);
+    var custs = document.getElementById("allcusts").innerHTML;
+    var custs_array = getData(custs);
     var names = document.getElementById("allnames").innerHTML;
     var names_array = getData(names);
     var name = document.getElementById("custname");
     name.options.length = 0;
     var o = document.createElement("option");
     o.selected = true;
-    var arraylength = names_array.length;
+    var arraylength = custs_array.length;
+    var pos = 0;
     for (i = 0; i < arraylength; i++) {
-      if (names_array[i].includes(cust_prefix)) {
-      //* the cust name includes the string entered by the user
+      pos = custs_array[i].search(cust_prefix);
+      if (pos == 0) {
+      //* the cust code starts with the prefix entered by the user
         text = names_array[i].replace(/~/g, ' ');
-        text = text.replace(/`/g, ',');
         o.text = text.replace(/&amp;/g, '&');
-        o.value = text.replace(/&amp;/g, '&');
         name.options.add(o, name.options.length);
         o.selected = false;
         o = document.createElement("option");
@@ -57,7 +56,6 @@ function custName() {
     }
   }
 }
-
 function partDescriptions(id) {
   //* find matches for partcodes begining with value in part code field
   var prefix = document.getElementById(id);

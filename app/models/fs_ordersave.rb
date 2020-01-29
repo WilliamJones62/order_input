@@ -31,12 +31,7 @@ class FsOrder < ApplicationRecord
         len = parts.length
         parts.each do |part|
           seq = (i + 1) * 10
-          if !order.po_number.blank?
-            po_number = order.po_number
-          else
-            po_number = time_stamp
-          end
-          text += part.partcode + '|' + seq.to_s + '|' + part.qty.to_s + '|' + po_number + '|' + order.date_required.strftime('%Y%m%d') + "\r\n"
+          text += part.partcode + '|' + seq.to_s + '|' + part.qty.to_s + '|' + time_stamp + '|' + order.date_required.strftime('%Y%m%d') + "\r\n"
           i += 1
           if i < len
             text += cust
@@ -46,16 +41,13 @@ class FsOrder < ApplicationRecord
       end
     end
     # need to remove first and last characters from text
-    text_len = text.length - 1
+    text_len = text.length - 2
     if text_len > 0
       data = text.slice(1, text_len)
       # time_stamp = Time.now.strftime('%Y%m%dT%H%M')
       # file_name = "/home/billj/Desktop/Windows-Share/orders" + time_stamp + ".txt"
       file_name = "/home/billj/Desktop/Windows-Share/orders.txt"
-      open(file_name, 'a') do |f|
-        f << data
-      end
-      # File.write(file_name, data)
+      File.write(file_name, data)
       orders.each do |order|
         order.status = 'PROCESSED'
         order.save
@@ -72,29 +64,23 @@ class FsOrder < ApplicationRecord
 
   def order_under_minimum
     if !errors.any? && !$ignore_errors
-      order_value = 0
-      fs_order_parts.each do |p|
-        p.partdesc.gsub!('~', ' ')
-        if p.partdesc.present?
+      if !$first_warning
+        order_value = 0
+        fs_order_parts.each do |p|
           part = Partmstr.find_by(part_desc: p.partdesc)
-          if part
-            price = CurrentPrice.find_by(part_code: part.part_code)
-            if price
-              if price.part_uom == 'LB'
-                order_value += price.part_price * p.qty * price.part_wt
-              else
-                order_value += price.part_price * p.qty
-              end
-            end
+          price = CurrentPrice.find_by(part_code: part.part_code)
+          if price.part_uom = 'LB'
+            order_value += price.part_price * p.qty * price.part_wt
+          else
+            order_value += price.part_price * p.qty
           end
         end
-      end
-      order_value.round(2)
-      if !$value || $value != order_value
-        $value = order_value
         if order_value < 300
-          errors.add(:customer, "approximate order amount of $" + order_value.to_s + " is under the minimum. Press 'Input order' again to continue.")
+          errors.add(:customer, "order under minimum, $" + order_value.to_s + ". Press 'Input order' again to continue.")
+          $first_warning = true
         end
+      else
+        $first_warning = false
       end
     end
   end

@@ -15,22 +15,42 @@
     <thead>
       <tr>
         <th><%= form.label :customer %></th>
+        <th><%= form.label :shipto %></th>
         <th><%= form.label :date_required %></th>
+        <th><%= form.label :po_number %></th>
+        <th><%= form.label :second_run %></th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><%= form.text_field :customer, size: 10, readonly: true, id: :fs_order_customer %></td>
-        <td><%= form.date_field :date_required, id: :fs_order_date_required, :value => Time.current.tomorrow.strftime('%Y-%m-%d') %></td>
+        <td><%= form.text_field :shipto, size: 10, readonly: true, id: :fs_order_shipto %></td>
+        <td><%= form.date_field :date_required, id: :fs_order_date_required, :value => @required_date %></td>
+        <td><%= form.text_field :po_number, size: 10, id: :fs_order_po_number %></td>
+        <td><%= form.check_box :second_run, id: :fs_order_second_run, :onchange=> ("dateRequired()") %></td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <thead>
+      <tr>
+        <th><%= form.label :notes %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= form.text_area :notes, size: "76x4", id: :fs_order_customer %></td>
       </tr>
     </tbody>
   </table>
 
   <h3>Parts</h3>
+  <% i = 1 %>
   <%= form.fields_for :fs_order_parts do |p| %>
   <table>
     <thead>
       <tr>
+        <th>No:</th>
         <th><%= p.label :uom, "UOM" %></th>
         <th><%= p.label :partdesc, "Description" %></th>
         <th><%= p.label :qty %></th>
@@ -39,9 +59,11 @@
     </thead>
     <tbody>
         <tr>
+          <td><%= i %></td>
+          <% i += 1 %>
           <td><%= p.text_field :uom, readonly: true, :style => "width:2.5em" %></td>
           <td><%= p.select :partdesc, $descs, {:style => "width:20em"}, {:onchange=> ("partUoms(id)")} %></td>
-          <td><%= p.number_field :qty, :style => "width:2.5em" %></td>
+          <td><%= p.number_field :qty, min: 0, :style => "width:2.5em" %></td>
           <td><%= p.text_field :partcode, {:oninput=> ("partDescriptions(id)")} %></td>
         </tr>
     </tbody>

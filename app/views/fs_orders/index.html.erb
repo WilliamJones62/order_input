@@ -3,38 +3,33 @@
 <table id="listtab"  class="stripe" class="mytable" class="display" cellspacing="0" >
   <thead>
     <tr>
-      <% if @user == 'ADMIN' %>
+      <% if @user == 'ADMIN' || @user == "ISR" %>
         <th>Rep</th>
       <% end %>
       <th>Cust</th>
       <th>Date</th>
+      <% if @user == 'ADMIN' %>
+        <th>Status</th>
+      <% end %>
       <th>Edit</th>
-      <th>Cancel</th>
+      <th>Delete</th>
     </tr>
   </thead>
 
   <tbody>
     <% @fs_orders.each do |fs_order| %>
       <tr>
-        <% if @user == 'ADMIN' %>
+        <% if @user == 'ADMIN' || @user == "ISR" %>
           <td><%= fs_order.rep %></td>
         <% end %>
         <td><%= fs_order.customer %></td>
         <td><%= display_date(fs_order.date_required) %></td>
-        <% if @user != 'ADMIN' %>
-          <td><%= link_to 'Edit', edit_fs_order_path(fs_order) %></td>
-          <td><%= link_to 'Cancel', fs_order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-        <% else %>
-          <td><%= link_to 'Show', fs_order %></td>
-          <td></td>
+        <% if @user == 'ADMIN' %>
+          <td><%= fs_order.status %></td>
         <% end %>
+        <td><%= link_to 'Edit', edit_fs_order_path(fs_order) %></td>
+        <td><%= link_to 'Cancel', fs_order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<% if @user != 'ADMIN' %>
-  <br>
-  <%= link_to 'New Order', fs_orders_customer_path %>
-  <%= link_to 'TXT Download', fs_orders_path(format: "csv") %>
-<% end %>

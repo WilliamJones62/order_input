@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<table id="listtab"  class="stripe" class="mytable" class="display" cellspacing="0" >
+  <thead>
+    <tr>
+      <th>Order</th>
+      <th>Error</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @errors.each do |e| %>
+      <tr>
+        <td><%= e[:order_numb] %></td>
+        <td><%= e[:error] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
