@@ -1,0 +1,2 @@
+class FsFocusItem < ApplicationRecord
+end

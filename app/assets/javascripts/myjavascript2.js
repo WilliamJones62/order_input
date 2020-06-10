@@ -12,7 +12,7 @@ function getData(data) {
 function custName() {
   //* find customer matches with value in the customer code field
   var prefix = document.getElementById("custcode");
-  var cust_prefix = prefix.value;
+  var cust_prefix = prefix.value.toUpperCase();
   var i = 0;
   var text = ' ';
   if (cust_prefix.length == 0 || !cust_prefix.trim()) {
@@ -61,7 +61,7 @@ function custName() {
 function partDescriptions(id) {
   //* find matches for partcodes begining with value in part code field
   var prefix = document.getElementById(id);
-  var part_prefix = prefix.value;
+  var part_prefix = prefix.value.toUpperCase();
   var i = 0;
   if (part_prefix.length == 0 || !part_prefix.trim()) {
     //* if the partcode prefix is now empty go back to existing part list for this customer

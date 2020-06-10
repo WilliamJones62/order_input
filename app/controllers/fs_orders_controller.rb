@@ -58,8 +58,16 @@ class FsOrdersController < ApplicationController
   def create
     fp = fs_order_params
     fp[:rep] = @user
+    e = Employee.find_by(Badge_: @user)
+    fp[:rep_name] = e.Firstname + ' ' + e.Lastname
     fp[:status] = 'ACTIVE'
     fp[:order_entered] = false
+    cut_off_record = Lateorderscustomerco.find_by shipto_code: $shipto
+    if cut_off_record
+      fp[:cut_off] = cut_off_record.cutoff_time.strftime('%l:%M:%S %p')
+    else
+      fp[:cut_off] = "NO CUT OFF"
+    end
 
     @fs_order = FsOrder.new(fp)
 
@@ -301,7 +309,9 @@ class FsOrdersController < ApplicationController
       if !$old_customer || $old_customer != $customer || $old_shipto != $shipto
         sort_array = []
         # get the parts for the customer if the ship to is the same, else get the parts for the ship to
+        focus_items = FsFocusItem.where(customer: $shipto).where('start_date <= ?', Date.today).where('end_date >= ?', Date.today).take(2)
         parts = Oecusbuy.where(cust_code: $shipto).where(last_ship_date: 30.days.ago..Date.today)
+        old_parts = Oecusbuy.where(cust_code: $shipto).where(last_ship_date: 394.days.ago..334.days.ago)
         $old_customer = $customer
         $old_shipto = $shipto
         $descs = []
@@ -310,14 +320,60 @@ class FsOrdersController < ApplicationController
         $jsdescs.push('~')
         $descs.push(' ')
         $jsuoms.push('~')
+        if focus_items.length > 0
+          desc = 'X*** FOCUS ITEMS ***'
+          combined = desc + 'AAAAAAAAA' + desc.length.to_s + 'AA'
+          sort_array.push(combined)
+        end
+        focus_items.each do |f|
+          if f.part_code
+            part = Partmstr.find_by(part_code: f.part_code)
+            if part
+              desc = part.part_desc.gsub(' ', '~')
+              desc.insert(0,'X')
+              if part.part_code[0,1] == 'Z'
+                # frozen codes should sort to the bottom of the list
+                desc.insert(1,'Z')
+              end
+              combined = desc + part.part_code + desc.length.to_s + part.uom
+              sort_array.push(combined)
+            end
+          end
+        end
+        if parts.length > 0
+          desc = 'Y*** RECENTLY ORDERED ***'
+          combined = desc + 'AAAAAAAAA' + desc.length.to_s + 'AA'
+          sort_array.push(combined)
+        end
         parts.each do |p|
           if p.part_code
             part = Partmstr.find_by(part_code: p.part_code)
             if part
               desc = part.part_desc.gsub(' ', '~')
+              desc.insert(0,'Y')
               if part.part_code[0,1] == 'Z'
                 # frozen codes should sort to the bottom of the list
-                desc.insert(0,'Z')
+                desc.insert(1,'Z')
+              end
+              combined = desc + p.part_code + desc.length.to_s + p.uom
+              sort_array.push(combined)
+            end
+          end
+        end
+        if old_parts.length > 0
+          desc = 'Z*** ORDERED THIS TIME LAST YEAR ***'
+          combined = desc + 'AAAAAAAAA' + desc.length.to_s + 'AA'
+          sort_array.push(combined)
+        end
+        old_parts.each do |p|
+          if p.part_code
+            part = Partmstr.find_by(part_code: p.part_code)
+            if part
+              desc = part.part_desc.gsub(' ', '~')
+              desc.insert(0,'Z')
+              if part.part_code[0,1] == 'Z'
+                # frozen codes should sort to the bottom of the list
+                desc.insert(1,'Z')
               end
               combined = desc + p.part_code + desc.length.to_s + p.uom
               sort_array.push(combined)
@@ -333,14 +389,16 @@ class FsOrdersController < ApplicationController
           offset = desc_length
           code_length = p.length - (desc_length + 4)
           code = p[offset,code_length]
-          if des[0,1] == 'Z'
-            desc = des[1..-1]
+          if des[0,2] == 'ZZ' || des[0,2] == 'YZ' || des[0,2] == 'XZ'
+            desc = des[2..-1]
           else
-            desc = des
+            desc = des[1..-1]
           end
           $jsdescs.push(desc.gsub(' ', '~'))
           desc.gsub!('~', ' ')
-          $descs.push(desc)
+          if !$descs.include?(desc)
+            $descs.push(desc)
+          end
           $jsuoms.push(uom)
         end
       end
@@ -406,7 +464,7 @@ class FsOrdersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def fs_order_params
       params.require(:fs_order).permit(
-        :customer, :shipto, :date_required, :rep, :status, :cancel_rep, :cancel_date, :po_number, :notes, :order_entered, :second_run,
+        :customer, :shipto, :date_required, :rep, :status, :cancel_rep, :cancel_date, :po_number, :notes, :order_entered, :second_run, :rep_name, :cut_off,
         fs_order_parts_attributes: [
           :id,
           :partcode,

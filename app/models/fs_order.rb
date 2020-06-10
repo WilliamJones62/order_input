@@ -73,19 +73,36 @@ class FsOrder < ApplicationRecord
   def order_under_minimum
     if !errors.any? && !$ignore_errors
       order_value = 0
+      partcode = ' '
       fs_order_parts.each do |p|
-        p.partdesc.gsub!('~', ' ')
-        if p.partdesc.present?
-          part = Partmstr.find_by(part_desc: p.partdesc)
+        if p.partcode.present?
+          part = Partmstr.find_by(part_code: p.partcode)
           if part
-            price = CurrentPrice.find_by(part_code: part.part_code)
-            if price
-              if price.part_uom == 'LB'
-                order_value += price.part_price * p.qty * price.part_wt
-              else
-                order_value += price.part_price * p.qty
+            partcode = p.partcode
+          else
+            p.partdesc.gsub!('~', ' ')
+            if p.partdesc.present?
+              part = Partmstr.find_by(part_desc: p.partdesc)
+              if part
+                partcode = part.part_code
               end
             end
+          end
+        else
+          p.partdesc.gsub!('~', ' ')
+          if p.partdesc.present?
+            part = Partmstr.find_by(part_desc: p.partdesc)
+            if part
+              partcode = part.part_code
+            end
+          end
+        end
+        price = CurrentPrice.find_by(part_code: partcode)
+        if price
+          if price.part_uom == 'LB'
+            order_value += price.part_price * p.qty * price.part_wt
+          else
+            order_value += price.part_price * p.qty
           end
         end
       end

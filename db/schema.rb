@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200128181734) do
+ActiveRecord::Schema.define(version: 20200224140530) do
 
   create_table "current_prices", force: :cascade do |t|
     t.string "part_code"
@@ -29,6 +29,26 @@ ActiveRecord::Schema.define(version: 20200128181734) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "bus_name"
+  end
+
+  create_table "employees", force: :cascade do |t|
+    t.string "Badge_"
+    t.string "FirstName"
+    t.string "Lastname"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "fs_focus_items", force: :cascade do |t|
+    t.string "team"
+    t.string "rep"
+    t.string "customer"
+    t.string "part_code"
+    t.string "part_desc"
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "fs_order_parts", force: :cascade do |t|
@@ -58,6 +78,18 @@ ActiveRecord::Schema.define(version: 20200128181734) do
     t.boolean "second_run"
     t.string "dp"
     t.string "order_num"
+    t.boolean "in_process"
+    t.string "rep_name"
+    t.string "cut_off"
+  end
+
+  create_table "lateorderscustomercos", force: :cascade do |t|
+    t.string "cust_code"
+    t.string "shipto_code"
+    t.string "route_code"
+    t.datetime "cutoff_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "oecusbuys", force: :cascade do |t|

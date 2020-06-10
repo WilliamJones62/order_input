@@ -44,20 +44,20 @@
     </tbody>
   </table>
 
-  <h3>Parts</h3>
+  <p><strong>Parts</strong></p>
   <% i = 1 %>
-  <%= form.fields_for :fs_order_parts do |p| %>
   <table>
     <thead>
       <tr>
         <th>No:</th>
-        <th><%= p.label :uom, "UOM" %></th>
-        <th><%= p.label :partdesc, "Description" %></th>
-        <th><%= p.label :qty %></th>
-        <th><%= p.label :partcode, "New part" %></th>
+        <th>UOM</th>
+        <th>Description</th>
+        <th>Qty</th>
+        <th>New part</th>
       </tr>
     </thead>
     <tbody>
+      <%= form.fields_for :fs_order_parts do |p| %>
         <tr>
           <td><%= i %></td>
           <% i += 1 %>
@@ -66,9 +66,9 @@
           <td><%= p.number_field :qty, min: 0, :style => "width:2.5em" %></td>
           <td><%= p.text_field :partcode, {:oninput=> ("partDescriptions(id)")} %></td>
         </tr>
+        <% end %>
     </tbody>
   </table>
-  <% end %>
 
   <div class="actions">
     <%= form.submit "Input order" %>

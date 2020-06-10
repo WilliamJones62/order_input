@@ -1,7 +1,7 @@
 class Api::V1::FsOrdersController < ApplicationController
 
   def api
-    @fs_orders = FsOrder.where.not(order_entered: true).where(status: "ACTIVE")
+    @fs_orders = FsOrder.where(status: "ACTIVE").where(in_process: [nil, false])
   end
 
 end
