@@ -58,6 +58,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'bcrypt', git: 'https://github.com/codahale/bcrypt-ruby.git', :require => 'bcrypt'
 gem 'devise'
 gem 'dotenv'
-gem 'rake', '12.3.2'
+gem 'rake', '12.3.3'
 # Memory cache gem
 gem 'dalli'
