@@ -178,8 +178,6 @@ class FsOrdersController < ApplicationController
     fp[:rep] = @user
     e = Employee.find_by(Badge_: @user)
     fp[:rep_name] = e.Firstname + ' ' + e.Lastname
-    shipto = CustomerShipto.find_by cust_code: session[:customer], shipto_code: session[:shipto]
-    fp[:acct_manager] = shipto.acct_manager
     fp[:status] = 'ACTIVE'
     fp[:order_entered] = false
     cut_off_record = Lateorderscustomerco.find_by shipto_code: session[:shipto]
@@ -471,8 +469,8 @@ class FsOrdersController < ApplicationController
         @descs.push(' ')
         @jsuoms.push('~')
         if focus_items.length > 0
-          desc = '*** FOCUS ITEMS ***'
-          combined = 'XAAAAAAAAA' + desc + 20.to_s + 'AA'
+          desc = 'X*** FOCUS ITEMS ***'
+          combined = desc + 'AAAAAAAAA' + desc.length.to_s + 'AA'
           sort_array.push(combined)
         end
         focus_items.each do |f|
@@ -480,16 +478,19 @@ class FsOrdersController < ApplicationController
             part = Partmstr.find_by part_code: f.part_code, part_status: "A"
             if part
               desc = part.part_desc.gsub(' ', '~')
-              # need to get to double digits
-              len = part.part_code.length + 10
-              combined = 'X' + part.part_code + desc + len.to_s + part.uom
+              desc.insert(0,'X')
+              if part.part_code[0,1] == 'Z'
+                # frozen codes should sort to the bottom of the list
+                desc.insert(1,'Z')
+              end
+              combined = desc + part.part_code + desc.length.to_s + part.uom
               sort_array.push(combined)
             end
           end
         end
         if parts.length > 0
-          desc = '*** RECENTLY ORDERED ***'
-          combined = 'YAAAAAAAAA' + desc + 20.to_s + 'AA'
+          desc = 'Y*** RECENTLY ORDERED ***'
+          combined = desc + 'AAAAAAAAA' + desc.length.to_s + 'AA'
           sort_array.push(combined)
         end
         parts.each do |p|
@@ -497,16 +498,19 @@ class FsOrdersController < ApplicationController
             part = Partmstr.find_by part_code: p.part_code, part_status: "A"
             if part
               desc = part.part_desc.gsub(' ', '~')
-              # need to get to double digits
-              len = part.part_code.length + 10
-              combined = 'Y' + part.part_code + desc + len.to_s + part.uom
+              desc.insert(0,'Y')
+              if part.part_code[0,1] == 'Z'
+                # frozen codes should sort to the bottom of the list
+                desc.insert(1,'Z')
+              end
+              combined = desc + p.part_code + desc.length.to_s + p.uom
               sort_array.push(combined)
             end
           end
         end
         if old_parts.length > 0
-          desc = '*** ORDERED THIS TIME LAST YEAR ***'
-          combined = 'ZAAAAAAAAA' + desc + 20.to_s + 'AA'
+          desc = 'Z*** ORDERED THIS TIME LAST YEAR ***'
+          combined = desc + 'AAAAAAAAA' + desc.length.to_s + 'AA'
           sort_array.push(combined)
         end
         old_parts.each do |p|
@@ -514,9 +518,12 @@ class FsOrdersController < ApplicationController
             part = Partmstr.find_by part_code: p.part_code, part_status: "A"
             if part
               desc = part.part_desc.gsub(' ', '~')
-              # need to get to double digits
-              len = part.part_code.length + 10
-              combined = 'Z' + part.part_code + desc + len.to_s + part.uom
+              desc.insert(0,'Z')
+              if part.part_code[0,1] == 'Z'
+                # frozen codes should sort to the bottom of the list
+                desc.insert(1,'Z')
+              end
+              combined = desc + p.part_code + desc.length.to_s + p.uom
               sort_array.push(combined)
             end
           end
@@ -524,14 +531,17 @@ class FsOrdersController < ApplicationController
         sorted_array = sort_array.sort
         sorted_array.each do |p|
           uom = p[p.length-2,2]
-          part_len = p[p.length-4,2]
-          # need to remove 10 to get true part code length
-          part_length = part_len.to_i - 10
-          part = p[1,part_length]
-          # add 1 to ignore the first character which is for sorting only
-          offset = part_length + 1
-          desc_length = p.length - (part_length + 5)
-          desc = p[offset,desc_length]
+          desc_len = p[p.length-4,2]
+          desc_length = desc_len.to_i
+          des = p[0,desc_length]
+          offset = desc_length
+          code_length = p.length - (desc_length + 4)
+          code = p[offset,code_length]
+          if des[0,2] == 'ZZ' || des[0,2] == 'YZ' || des[0,2] == 'XZ'
+            desc = des[2..-1]
+          else
+            desc = des[1..-1]
+          end
           @jsdescs.push(desc.gsub(' ', '~'))
           desc.gsub!('~', ' ')
           if !@descs.include?(desc)
@@ -630,7 +640,7 @@ class FsOrdersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def fs_order_params
       params.require(:fs_order).permit(
-        :customer, :shipto, :date_required, :rep, :status, :cancel_rep, :cancel_date, :po_number, :notes, :order_entered, :second_run, :rep_name, :cut_off, :next_schedueled_delivery, :acct_manager,
+        :customer, :shipto, :date_required, :rep, :status, :cancel_rep, :cancel_date, :po_number, :notes, :order_entered, :second_run, :rep_name, :cut_off, :next_schedueled_delivery,
         fs_order_parts_attributes: [
           :id,
           :partcode,

@@ -2,7 +2,10 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'fs_orders/api'
-      resources :fs_orders
+      get 'fs_orders/parts'
+      resources :fs_orders do
+        resources :fs_order_parts, except: [:api, :parts]
+      end
     end
   end
   get 'fs_orders/error'

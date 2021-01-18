@@ -3,6 +3,7 @@ class FsOrder < ApplicationRecord
   accepts_nested_attributes_for :fs_order_parts, reject_if: proc { |attributes| attributes['partdesc'].blank? }
   validates :date_required, presence: true
   validate :part_must_be_present
+  validate :part_must_not_be_duplicated
   validate :order_under_minimum
 
 
@@ -70,25 +71,39 @@ class FsOrder < ApplicationRecord
     end
   end
 
+  def part_must_not_be_duplicated
+    if !errors.any? && !$ignore_errors
+      parts = []
+      fs_order_parts.each do |p|
+        if p.partdesc.present?
+          if parts.include?(p.partdesc)
+            errors.add(:customer, "order must not have duplicate parts")
+          end
+          parts.push(p.partdesc)
+        end
+      end
+    end
+  end
+
   def order_under_minimum
     if !errors.any? && !$ignore_errors
       order_value = 0
       partcode = ' '
       fs_order_parts.each do |p|
-        if p.partcode.present?
-          part = Partmstr.find_by(part_code: p.partcode)
-          if part
-            partcode = p.partcode
-          else
-            p.partdesc.gsub!('~', ' ')
-            if p.partdesc.present?
-              part = Partmstr.find_by(part_desc: p.partdesc)
-              if part
-                partcode = part.part_code
-              end
-            end
-          end
-        else
+        # if p.partcode.present?
+        #   part = Partmstr.find_by(part_code: p.partcode)
+        #   if part
+        #     partcode = p.partcode
+        #   else
+        #     p.partdesc.gsub!('~', ' ')
+        #     if p.partdesc.present?
+        #       part = Partmstr.find_by(part_desc: p.partdesc)
+        #       if part
+        #         partcode = part.part_code
+        #       end
+        #     end
+        #   end
+        # else
           p.partdesc.gsub!('~', ' ')
           if p.partdesc.present?
             part = Partmstr.find_by(part_desc: p.partdesc)
@@ -96,13 +111,15 @@ class FsOrder < ApplicationRecord
               partcode = part.part_code
             end
           end
-        end
-        price = CurrentPrice.find_by(part_code: partcode)
-        if price
-          if price.part_uom == 'LB'
-            order_value += price.part_price * p.qty * price.part_wt
-          else
-            order_value += price.part_price * p.qty
+        # end
+        if partcode.present?
+          price = CurrentPrice.find_by(part_code: partcode)
+          if price
+            if price.part_uom == 'LB'
+              order_value += price.part_price * p.qty * price.part_wt
+            else
+              order_value += price.part_price * p.qty
+            end
           end
         end
       end
@@ -110,7 +127,7 @@ class FsOrder < ApplicationRecord
       if !$value || $value != order_value
         $value = order_value
         if order_value < 300
-          errors.add(:customer, "approximate order amount of $" + order_value.to_s + " is under the minimum. Press 'Input order' again to continue.")
+          errors.add(:customer, "approximate order amount of $" + order_value.round(2).to_s + " is under the minimum. Press 'Input order' again to continue.")
         end
       end
     end

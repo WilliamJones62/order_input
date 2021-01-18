@@ -5,9 +5,9 @@
 <%= form_with url: fs_orders_selected_path, local: true, method: 'get' do |f| %>
   <%= f.label(:fs_orders_customer, 'Customer:') %>
   <%= f.text_field :custcode, {id: "custcode", :oninput=> ("custName()")} %><br>
-  <%= f.select :custname, $names, {:style => "width:20em"}, id: "custname"  %>
+  <%= f.select :custname, @names, {:style => "width:20em"}, id: "custname"  %>
   <%= f.submit "Enter" %>
 <% end %>
 
-<p id= "allnames" hidden> <%= $allnames %> </p>
-<p id= "allcusts" hidden> <%= $allcusts %> </p>
+<p id= "allnames" hidden> <%= @allnames %> </p>
+<p id= "allcusts" hidden> <%= @allcusts %> </p>

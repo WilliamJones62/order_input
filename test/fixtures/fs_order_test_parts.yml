@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fs_order_id: 1
+  partcode: MyString
+  qty: 1
+  part_desc: MyString
+  uom: MyString
+  new_part: false
+
+two:
+  fs_order_id: 1
+  partcode: MyString
+  qty: 1
+  part_desc: MyString
+  uom: MyString
+  new_part: false

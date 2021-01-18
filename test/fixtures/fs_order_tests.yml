@@ -1,0 +1,39 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  customer: MyString
+  shipto: MyString
+  date_required: 2020-10-01
+  rep: MyString
+  status: MyString
+  cancel_rep: MyString
+  cancel_date: 2020-10-01
+  po_number: MyString
+  notes: MyText
+  order_entered: false
+  second_run: false
+  dp: MyString
+  order_num: MyString
+  in_process: false
+  rep_name: MyString
+  cut_off: MyString
+  next_schedueled_delivery: 2020-10-01
+
+two:
+  customer: MyString
+  shipto: MyString
+  date_required: 2020-10-01
+  rep: MyString
+  status: MyString
+  cancel_rep: MyString
+  cancel_date: 2020-10-01
+  po_number: MyString
+  notes: MyText
+  order_entered: false
+  second_run: false
+  dp: MyString
+  order_num: MyString
+  in_process: false
+  rep_name: MyString
+  cut_off: MyString
+  next_schedueled_delivery: 2020-10-01

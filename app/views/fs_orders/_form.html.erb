@@ -62,7 +62,7 @@
           <td><%= i %></td>
           <% i += 1 %>
           <td><%= p.text_field :uom, readonly: true, :style => "width:2.5em" %></td>
-          <td><%= p.select :partdesc, $descs, {:style => "width:20em"}, {:onchange=> ("partUoms(id)")} %></td>
+          <td><%= p.select :partdesc, @descs, {:style => "width:20em"}, {:onchange=> ("partUoms(id)")} %></td>
           <td><%= p.number_field :qty, min: 0, :style => "width:2.5em" %></td>
           <td><%= p.text_field :partcode, {:oninput=> ("partDescriptions(id)")} %></td>
         </tr>
@@ -74,8 +74,8 @@
     <%= form.submit "Input order" %>
   </div>
 <% end %>
-<p id= "uoms" hidden> <%= $jsuoms %> </p>
-<p id= "descs" hidden> <%= $jsdescs %> </p>
-<p id= "alldescs" hidden> <%= $alldescs %> </p>
-<p id= "allcodes" hidden> <%= $allcodes %> </p>
-<p id= "alluoms" hidden> <%= $alluoms %> </p>
+<p id= "uoms" hidden> <%= @jsuoms %> </p>
+<p id= "descs" hidden> <%= @jsdescs %> </p>
+<p id= "alldescs" hidden> <%= @alldescs %> </p>
+<p id= "allcodes" hidden> <%= @allcodes %> </p>
+<p id= "alluoms" hidden> <%= @alluoms %> </p>

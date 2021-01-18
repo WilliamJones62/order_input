@@ -178,8 +178,6 @@ class FsOrdersController < ApplicationController
     fp[:rep] = @user
     e = Employee.find_by(Badge_: @user)
     fp[:rep_name] = e.Firstname + ' ' + e.Lastname
-    shipto = CustomerShipto.find_by cust_code: session[:customer], shipto_code: session[:shipto]
-    fp[:acct_manager] = shipto.acct_manager
     fp[:status] = 'ACTIVE'
     fp[:order_entered] = false
     cut_off_record = Lateorderscustomerco.find_by shipto_code: session[:shipto]
@@ -472,7 +470,7 @@ class FsOrdersController < ApplicationController
         @jsuoms.push('~')
         if focus_items.length > 0
           desc = '*** FOCUS ITEMS ***'
-          combined = 'XAAAAAAAAA' + desc + 20.to_s + 'AA'
+          combined = 'XAAAAAAAAA' + desc + 10.to_s + 'AA'
           sort_array.push(combined)
         end
         focus_items.each do |f|
@@ -489,7 +487,7 @@ class FsOrdersController < ApplicationController
         end
         if parts.length > 0
           desc = '*** RECENTLY ORDERED ***'
-          combined = 'YAAAAAAAAA' + desc + 20.to_s + 'AA'
+          combined = 'YAAAAAAAAA' + desc + 10.to_s + 'AA'
           sort_array.push(combined)
         end
         parts.each do |p|
@@ -506,7 +504,7 @@ class FsOrdersController < ApplicationController
         end
         if old_parts.length > 0
           desc = '*** ORDERED THIS TIME LAST YEAR ***'
-          combined = 'ZAAAAAAAAA' + desc + 20.to_s + 'AA'
+          combined = 'ZAAAAAAAAA' + desc + 10.to_s + 'AA'
           sort_array.push(combined)
         end
         old_parts.each do |p|
@@ -630,7 +628,7 @@ class FsOrdersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def fs_order_params
       params.require(:fs_order).permit(
-        :customer, :shipto, :date_required, :rep, :status, :cancel_rep, :cancel_date, :po_number, :notes, :order_entered, :second_run, :rep_name, :cut_off, :next_schedueled_delivery, :acct_manager,
+        :customer, :shipto, :date_required, :rep, :status, :cancel_rep, :cancel_date, :po_number, :notes, :order_entered, :second_run, :rep_name, :cut_off, :next_schedueled_delivery,
         fs_order_parts_attributes: [
           :id,
           :partcode,

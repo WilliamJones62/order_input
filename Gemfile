@@ -59,3 +59,5 @@ gem 'bcrypt', git: 'https://github.com/codahale/bcrypt-ruby.git', :require => 'b
 gem 'devise'
 gem 'dotenv'
 gem 'rake', '12.3.2'
+# Memory cache gem
+gem 'dalli'
